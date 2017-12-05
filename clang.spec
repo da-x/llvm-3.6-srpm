@@ -11,7 +11,14 @@
 	%{_bindir}/clang-query \
 	%{_bindir}/clang-reorder-fields \
 	%{_bindir}/clang-rename \
-	%{_bindir}/clang-tidy
+	%{_bindir}/clang-tidy \
+	%{_datadir}/clang/clang-include-fixer.py \
+	%{_datadir}/clang/clang-tidy-diff.py \
+	%{_datadir}/clang/run-clang-tidy.py \
+	%{_datadir}/clang/run-find-all-symbols.py \
+	%{_datadir}/clang/clang-include-fixer.el \
+	%{_datadir}/clang/clang-rename.el \
+	%{_datadir}/clang/clang-rename.py
 
 %global clang_binaries \
 	%{_bindir}/clang \
@@ -23,6 +30,12 @@
 	%{_bindir}/clang-format \
 	%{_bindir}/clang-import-test \
 	%{_bindir}/clang-offload-bundler
+
+%global clang_format_tools \
+	%{_datadir}/clang/clang-format-sublime.py \
+	%{_datadir}/clang/clang-format.el \
+	%{_datadir}/clang/clang-format.py \
+	%{_datadir}/clang/clang-format-diff.py
 
 %if 0%{?fedora}
 %bcond_without python3
@@ -257,21 +270,8 @@ sed -i -e 's~#!/usr/bin/env python~#!/usr/bin/python2~' %{buildroot}%{_bindir}/g
 mv -v %{buildroot}%{_includedir}/clang/Config/config{,-%{__isa_bits}}.h
 install -m 0644 %{SOURCE100} %{buildroot}%{_includedir}/clang/Config/config.h
 
-# remove editor integrations (bbedit, sublime, emacs, vim)
+# bbedit (macOS-only editor) integration
 rm -vf %{buildroot}%{_datadir}/clang/clang-format-bbedit.applescript
-rm -vf %{buildroot}%{_datadir}/clang/clang-format-sublime.py*
-rm -vf %{buildroot}%{_datadir}/clang/clang-format.el
-rm -vf %{buildroot}%{_datadir}/clang/clang-format.py*
-# clang-tools-extra
-rm -vf %{buildroot}%{_datadir}/clang/clang-include-fixer.py
-rm -vf %{buildroot}%{_datadir}/clang/clang-tidy-diff.py
-rm -vf %{buildroot}%{_datadir}/clang/run-clang-tidy.py
-rm -vf %{buildroot}%{_datadir}/clang/run-find-all-symbols.py
-rm -vf %{buildroot}%{_datadir}/clang/clang-include-fixer.el
-rm -vf %{buildroot}%{_datadir}/clang/clang-rename.el
-rm -vf %{buildroot}%{_datadir}/clang/clang-rename.py
-# remove diff reformatter
-rm -vf %{buildroot}%{_datadir}/clang/clang-format-diff.py*
 
 # TODO: Package html docs
 rm -Rvf %{buildroot}%{_pkgdocdir}
@@ -317,6 +317,7 @@ make %{?_smp_mflags} check || :
 %files
 %{_libdir}/clang/
 %{clang_binaries}
+%{clang_format_tools}
 %{_bindir}/c-index-test
 %if 0%{?fedora}
 %{_mandir}/man1/clang.1
